@@ -36,7 +36,7 @@ public class ExtractEventFlowDialog extends JDialog {
 		this.graphProject = graphProject;
 		this.content = content;
 
-		this.setTitle("Extract event flow");
+		this.setTitle("Show edges (event pairs)");
 
 		this.setBounds(100, 100, 500, 420);
 		this.getContentPane().setLayout(new BorderLayout());
@@ -89,7 +89,7 @@ public class ExtractEventFlowDialog extends JDialog {
 	private void exportToTxt() {
 		JFileChooser fileChooser = new JFileChooser(this.graphProject.getFileSavingDirectory());
 
-		fileChooser.setSelectedFile(new File(this.graphProject.getName() + " - Event Flow"));
+		fileChooser.setSelectedFile(new File(this.graphProject.getName() + " - Event Pairs"));
 		fileChooser.setFileFilter(new FileNameExtensionFilter("Text file (*.txt)", "txt"));
 		fileChooser.setDialogTitle("Specify a file to save");
 

@@ -1,11 +1,16 @@
 package com.general.mbts4ma.view.framework.bo;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.jgrapht.alg.DijkstraShortestPath;
+
 import com.github.eta.esg.EventSequenceGraph;
+import com.github.eta.esg.EventSequenceGraphEdge;
 import com.github.eta.esg.GenericVertex;
 import com.github.eta.esg.Vertex;
 import com.mxgraph.model.mxCell;
@@ -59,6 +64,63 @@ public abstract class GraphConverter {
 
 		return esg;
 	}
+	
+	/**
+	 * verify if the current ESG is valid
+	 * @param graph
+	 * @return empty if it valid
+	 * 		otherwise, a set of messages to correct the model
+	 */
+	public static synchronized ArrayList<String> verifyESG(mxGraph graph) {
+		ArrayList<String> errorMsgs = new ArrayList<>();
+		
+		Map<Vertex, List<Vertex>> vertices = getVertices(graph);
+		if(vertices.isEmpty())
+			errorMsgs.add("No events in the model.");
+		else {
+			//begin check for self-loops	
+			Iterator<Vertex> iVertices = vertices.keySet().iterator();
+			while (iVertices.hasNext()) {
+				Vertex source = iVertices.next();
+				List<Vertex> targets = vertices.get(source);
+				for (Vertex target : targets) {
+					if(source.getId() == target.getId())
+						errorMsgs.add("remove self-loop at event '" + source + "'.");
+				}
+			}
+			//end check for self-loops			
+		}
+		
+		//verify if ESG is valid (paths from [ to each e and path from each e to ])
+		if(errorMsgs.isEmpty()) {
+			try {
+				EventSequenceGraph esg = convertToESG(graph);
+				Vertex startVertex = esg.getStartVertex();
+				Vertex endVertex = esg.getEndVertex();
+				for(Vertex v : esg.vertexSet()) {
+					if(v != startVertex && v != endVertex) {
+						DijkstraShortestPath<Vertex, EventSequenceGraphEdge> dsp = new DijkstraShortestPath<>(esg, startVertex, v);
+						if(dsp.getPathEdgeList() == null) {
+							errorMsgs.add("no path from '[' to '" + v + "'.");
+						}
+						
+						dsp = new DijkstraShortestPath<>(esg, v, endVertex);
+						if(dsp.getPathEdgeList() == null) {
+							errorMsgs.add("no path from '"+v+"' to ']'.");
+						}
+						
+					}
+				}
+				
+				
+			} catch(Exception e) { 
+				errorMsgs.add(e.getMessage());
+			}
+		}
+		
+		return errorMsgs;
+	}
+	
 
 	private static synchronized Map<Vertex, List<Vertex>> getVertices(mxGraph graph) {
 		Map<Vertex, List<Vertex>> vertices = new LinkedHashMap<Vertex, List<Vertex>>();
@@ -102,7 +164,7 @@ public abstract class GraphConverter {
 				List<Vertex> targets = vertices.get(source);
 
 				registerEventFlow(source, targets);
-
+				verifyNode(esg, source);
 				if (targets != null && !targets.isEmpty()) {
 					for (Vertex target : targets) {
 						esg.addEdge(verifyNode(esg, source), verifyNode(esg, target));

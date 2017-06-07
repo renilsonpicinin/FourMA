@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,6 +52,7 @@ import com.general.mbts4ma.view.framework.vo.GraphProjectVO;
 import com.github.eta.esg.Vertex;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.swing.handler.mxConnectionHandler;
 import com.mxgraph.swing.handler.mxKeyboardHandler;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxEvent;
@@ -197,11 +199,11 @@ public class MainView extends JFrame {
 		this.mnItemProperties.setFont(new Font("Verdana", Font.PLAIN, 12));
 		this.mnProject.add(this.mnItemProperties);
 
-		this.mnItemExtractEventFlow = new JMenuItem("Extract event flow");
+		this.mnItemExtractEventFlow = new JMenuItem("Show edges (event pairs)");
 		this.mnItemExtractEventFlow.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MainView.this.extractEventFlow();
+				MainView.this.showEventPairs();
 			}
 		});
 		this.mnItemExtractEventFlow.setFont(new Font("Verdana", Font.PLAIN, 12));
@@ -364,7 +366,7 @@ public class MainView extends JFrame {
 				}
 			}
 		});
-
+		
 		this.graphComponent.getGraphControl().addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -585,37 +587,58 @@ public class MainView extends JFrame {
 		}
 	}
 
-	private void extractEventFlow() {
+	private void showEventPairs() {
 		if (this.graphProject != null) {
-			try {
-				GraphConverter.convertToESG(this.graph);
+			ArrayList<String> errorMsgs = GraphConverter.verifyESG(this.graph);
+			if(errorMsgs.isEmpty()) {
+				try {
+					GraphConverter.convertToESG(this.graph);
 
-				String eventFlow = GraphConverter.getEventFlow();
+					String eventPairs = GraphConverter.getEventFlow();
 
-				ExtractEventFlowDialog dialog = new ExtractEventFlowDialog(this.graphProject, eventFlow);
+					ExtractEventFlowDialog dialog = new ExtractEventFlowDialog(this.graphProject, eventPairs);
 
-				dialog.setVisible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
+					dialog.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}				
 			}
+			else {
+				JOptionPane.showMessageDialog(null, setUpMessages(errorMsgs), "Error", JOptionPane.ERROR_MESSAGE);
+			}
+			
 		}
+	}
+	
+	private String setUpMessages(ArrayList<String> msgs) {
+		StringBuilder setupMsg = new StringBuilder("");
+		for(String msg : msgs)
+			setupMsg.append(msg + "\n");
+		
+		return setupMsg.toString();
 	}
 
 	private void extractCESs() {
 		if (this.graphProject != null) {
-			try {
-				GraphSolver.solve(this.graph);
-
-				List<List<Vertex>> cess = GraphSolver.getCess();
-
-				String cessAsString = GraphSolver.getCESsAsString();
-
-				ExtractCESsDialog dialog = new ExtractCESsDialog(this.graph, this.graphProject, cess, cessAsString);
-
-				dialog.setVisible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
+			ArrayList<String> errorMsgs = GraphConverter.verifyESG(this.graph);
+			if(errorMsgs.isEmpty()) {			
+				try {
+					GraphSolver.solve(this.graph);
+	
+					List<List<Vertex>> cess = GraphSolver.getCess();
+	
+					String cessAsString = GraphSolver.getCESsAsString();
+	
+					ExtractCESsDialog dialog = new ExtractCESsDialog(this.graph, this.graphProject, cess, cessAsString);
+	
+					dialog.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
+			else {
+				JOptionPane.showMessageDialog(null, setUpMessages(errorMsgs), "Error", JOptionPane.ERROR_MESSAGE);
+			}				
 		}
 	}
 
@@ -778,11 +801,11 @@ public class MainView extends JFrame {
 		this.btnExtractEventFlow.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MainView.this.extractEventFlow();
+				MainView.this.showEventPairs();
 			}
 		});
 		this.btnExtractEventFlow.setIcon(new ImageIcon(MainView.class.getResource("/com/general/mbts4ma/view/framework/images/eventflow.png")));
-		this.btnExtractEventFlow.setToolTipText("Extract event flow");
+		this.btnExtractEventFlow.setToolTipText("Show edges (event pairs)");
 		this.btnExtractEventFlow.setFont(new Font("Verdana", Font.PLAIN, 12));
 		this.btnExtractEventFlow.setEnabled(false);
 		toolBarHeader.add(this.btnExtractEventFlow);
