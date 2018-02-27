@@ -2,12 +2,20 @@ package com.general.mbts4ma.view.framework.graph;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
+
+import com.general.mbts4ma.EventInstance;
 import com.general.mbts4ma.view.MainView;
 import com.general.mbts4ma.view.dialog.EventPropertiesDialog;
+import com.general.mbts4ma.view.dialog.ParametersDialog;
 import com.general.mbts4ma.view.framework.util.FileUtil;
 import com.general.mbts4ma.view.framework.util.MapUtil;
 import com.general.mbts4ma.view.framework.util.StringUtil;
@@ -46,6 +54,10 @@ public class CustomGraphActions {
 
 	public static Action getSelectAllVerticesAction() {
 		return selectAllVerticesAction;
+	}
+	
+	public static Action getParametersAction(GraphProjectVO graphProject) {
+		return new ParametersAction("parameters", graphProject);
 	}
 
 	public static Action getDefineMethodTemplateAction(GraphProjectVO graphProject, String label) {
@@ -94,7 +106,6 @@ public class CustomGraphActions {
 				}
 			}
 		}
-
 	}
 
 	public static class EditAction extends AbstractAction {
@@ -124,6 +135,52 @@ public class CustomGraphActions {
 		}
 
 	}
+	
+	public static class ParametersAction extends AbstractAction {
+		
+		private GraphProjectVO graphProject = null;
+
+		public ParametersAction(String name, GraphProjectVO graphProject) {
+			super(name);
+			this.graphProject = graphProject;
+		}
+		
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			mxGraph graph = getGraph(e);
+			mxGraphComponent graphComponent = getGraphComponent(e);
+
+			if (graph != null) {
+				Object selectedCell = graph.getSelectionCell();
+
+				if (selectedCell != null) {	
+					graph.getModel().beginUpdate();
+					
+					mxCell vertice = (mxCell) selectedCell;
+
+					if (isVertex(vertice) && !isStartVertex(vertice) && !isEndVertex(vertice) && !isGeneratedEventVertex(vertice)) {
+
+						vertice.setStyle(MainView.PARAMETER_VERTEX);
+						
+						ArrayList<EventInstance> values = this.graphProject.getEventInstanceByVertice(vertice.getId());
+						
+						ParametersDialog dialog = new ParametersDialog(this.graphProject, values, vertice);
+
+						dialog.setVisible(true);
+
+						this.graphProject.updateEventInstanceByVertices(vertice.getId(), dialog.getValues());
+
+						graph.getModel().endUpdate();
+
+						graphComponent.refresh();
+					}
+					
+				}
+			}
+		}
+
+	}
 
 	public static class DisplayIdAction extends AbstractAction {
 
@@ -139,6 +196,7 @@ public class CustomGraphActions {
 				Object[] selectedCells = graph.getSelectionCells();
 
 				if (selectedCells != null && selectedCells.length > 0) {
+					
 					for (Object selectedCell : selectedCells) {
 						mxCell cell = (mxCell) selectedCell;
 						String message = (isVertex(cell) ? "Vertex" : "Edge") + " ID";
@@ -200,13 +258,21 @@ public class CustomGraphActions {
 		public void actionPerformed(ActionEvent e) {
 			mxGraph graph = getGraph(e);
 			mxGraphComponent graphComponent = getGraphComponent(e);
-
+			
+			String parentPath = "";
+			try {
+				parentPath = (new File("..")).getCanonicalPath();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 			if (graph != null) {
 				Object[] selectedCells = graph.getSelectionCells();
-
+				
 				if (selectedCells != null && selectedCells.length > 0) {
 					graph.getModel().beginUpdate();
-
+					
 					for (Object selectedCell : selectedCells) {
 						mxCell vertice = (mxCell) selectedCell;
 
@@ -215,7 +281,7 @@ public class CustomGraphActions {
 
 							this.graphProject.updateMethodTemplateByVertice(vertice.getId(), this.label);
 
-							String methodTemplateContent = FileUtil.readFile(new File("templates" + File.separator + "robotium-methods" + File.separator + this.label.replace(" ", "") + ".java"));
+							String methodTemplateContent = FileUtil.readFile(new File(parentPath + File.separator + "templates" + File.separator + "robotium-methods" + File.separator + this.label.replace(" ", "") + ".java"));
 
 							List<String> values = StringUtil.getValuesWithRegEx(methodTemplateContent, "\\{\\{([a-z]+)\\}\\}");
 
@@ -307,7 +373,7 @@ public class CustomGraphActions {
 						if (isVertex(vertice) && !isStartVertex(vertice) && !isEndVertex(vertice) && !isGeneratedEventVertex(vertice)) {
 							vertice.setStyle(MainView.NORMAL_VERTEX);
 
-							this.graphProject.removeMethodTemplateByVertice(vertice.getId());
+							this.graphProject.removeEventInstanceByVertices(vertice.getId());
 							this.graphProject.removeMethodTemplatePropertiesByVertice(vertice.getId());
 						}
 					}
