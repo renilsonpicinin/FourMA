@@ -375,7 +375,7 @@ public class MainView extends JFrame {
 
 				if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
 					String nodeValue = JOptionPane.showInputDialog(null, "Enter the value of the node", "Attention", JOptionPane.INFORMATION_MESSAGE);
-
+										
 					if (nodeValue != null && !"".equalsIgnoreCase(nodeValue)) {
 						MainView.this.graph.getModel().beginUpdate();
 
@@ -383,6 +383,7 @@ public class MainView extends JFrame {
 
 						MainView.this.graph.getModel().endUpdate();
 					}
+										
 				} else {
 					if (SwingUtilities.isMiddleMouseButton(e)) {
 						MainView.this.graphComponent.zoomActual();
