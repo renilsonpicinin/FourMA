@@ -231,10 +231,6 @@ public class ProjectPropertiesDialog extends JDialog {
 			this.txtApplicationPackage.setText(applicationPackage);
 
 			this.cmbMainTestingActivity.setModel(new DefaultComboBoxModel(activities.toArray()));
-
-			JOptionPane.showMessageDialog(null, "The selected path is an Android project.", "Attention", JOptionPane.INFORMATION_MESSAGE);
-		} else {
-			JOptionPane.showMessageDialog(null, "The selected path is not an Android project.", "Attention", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
