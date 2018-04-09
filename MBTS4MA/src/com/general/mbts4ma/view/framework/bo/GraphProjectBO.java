@@ -4,16 +4,24 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.swing.JOptionPane;
+
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
+
+import com.general.mbts4ma.EventInstance;
+import com.general.mbts4ma.Parameter;
 import com.general.mbts4ma.view.MainView;
 import com.general.mbts4ma.view.dialog.EventPropertiesDialog;
 import com.general.mbts4ma.view.framework.gson.GsonBuilderSingleton;
@@ -258,11 +266,82 @@ public class GraphProjectBO implements Serializable {
 
 		return methodNames;
 	}
+	
+	public static synchronized boolean containsVerticeEventInstance (GraphProjectVO graphProject, List<Vertex> ces) {
+		if (ces != null && !ces.isEmpty()) {
+			for (Vertex vertice : ces) {
+				if (graphProject.getEventInstanceByVertice(vertice.getId()) != null) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static synchronized void generateMethodNamesEventInstanceListFromCES(GraphProjectVO graphProject, Map<String, String> parameters, List<Vertex> ces, StringBuilder testingMethodBodies) throws IOException {
+		File parentPath = new File("..");
+		String testingMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "TestingMethodTemplate.java"));
+		testingMethodTemplate = StringUtil.replace(testingMethodTemplate, parameters);
+		
+		List<String> originalCes = null;
+		List<String> stringSequence = null;
+		String testingMethodBody = "";
+		Map<Integer, ArrayList<EventInstance>> map = null;
+		int index = 0;
 
+		if (ces != null && !ces.isEmpty()) {
+			originalCes = new LinkedList<String>();
+			map = new LinkedHashMap<Integer, ArrayList<EventInstance>>();
+			
+			for (Vertex vertice : ces) {
+				originalCes.add(StringUtil.toCamelCase(vertice.getName(), false, "[", "]"));
+				if (graphProject.getEventInstanceByVertice(vertice.getId()) != null) {
+					if (!graphProject.getEventInstanceByVertice(vertice.getId()).isEmpty()) map.put(index, graphProject.getEventInstanceByVertice(vertice.getId()));
+				}
+				index++;
+			}
+
+			Iterator<Integer> iKey = map.keySet().iterator();
+			
+			while (iKey.hasNext()) {
+				int key = iKey.next();
+				ArrayList<EventInstance> values = map.get(key);
+				for (EventInstance e : values) {
+					stringSequence = new LinkedList<String>(originalCes);
+					String nome = stringSequence.get(key);
+					stringSequence.set(key, e.getId());
+					
+					StringBuilder sb = new StringBuilder();
+					for (Parameter p : e.getParameters()) {
+						if (e.getParameters().size() - 1 == e.getParameters().lastIndexOf(p)) {
+							sb.append(p.getType() + " " + p.getName());
+						} else {
+							sb.append(p.getType() + " " + p.getName() + ", ");
+						}		
+					}
+					
+					// METHOD TEMPLATE
+					testingMethodBody = testingMethodTemplate
+							.replace("{{testingmethodname}}", "EVENT" + e.getId())
+							.replace("{{ces}}", StringUtil.convertListToString(stringSequence, "[", "]").replaceAll(e.getId(), nome + "(" + sb.toString() + ")") );
+					
+					testingMethodBodies.append(testingMethodBody);
+					
+					if (testingMethodBodies.length() > 0  && testingMethodBodies.indexOf("\n\n") != testingMethodBodies.length() - 1) {
+						testingMethodBodies.append("\n\n");
+					}
+				}	
+			}
+		}
+	}
+
+	//TODO SEQUÊNCIAS COM EVENTINSTANCE
 	public static synchronized boolean generateTestingCodeSnippets(GraphProjectVO graphProject, Map<String, String> parameters, File testingCodeSnippetsDirectory, List<List<Vertex>> cess) throws Exception {
-		String testingClassTemplate = FileUtil.readFile(new File("templates" + File.separator + "TestingClassTemplate.java"));
-		String testingMethodTemplate = FileUtil.readFile(new File("templates" + File.separator + "TestingMethodTemplate.java"));
-
+		File parentPath = new File("..");
+		
+		String testingClassTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "TestingClassTemplate.java"));
+		String testingMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "TestingMethodTemplate.java"));
+		
 		testingClassTemplate = StringUtil.replace(testingClassTemplate, parameters);
 		testingMethodTemplate = StringUtil.replace(testingMethodTemplate, parameters);
 
@@ -279,10 +358,12 @@ public class GraphProjectBO implements Serializable {
 
 			for (List<Vertex> ces : cess) {
 				String testingMethodBody = testingMethodTemplate.replace("{{testingmethodname}}", "CES" + count++).replace("{{ces}}", StringUtil.convertListToString(generateMethodNamesListFromCES(ces), "[", "]"));
-
+				
 				if (testingMethodBodies.length() > 0) {
 					testingMethodBodies.append("\n\n");
 				}
+				
+				if (containsVerticeEventInstance(graphProject, ces)) generateMethodNamesEventInstanceListFromCES(graphProject, parameters, ces, testingMethodBodies);
 
 				testingMethodBodies.append(testingMethodBody);
 			}
@@ -300,8 +381,10 @@ public class GraphProjectBO implements Serializable {
 	}
 
 	private static synchronized void generateTestingAdapters(GraphProjectVO graphProject, Map<String, String> methodNames, Map<String, String> parameters, File testingCodeSnippetsDirectory) throws Exception {
-		String testingAdapterClassTemplate = FileUtil.readFile(new File("templates" + File.separator + "adapter-templates" + File.separator + "TestingAdapterClassTemplate.java"));
-		String testingAdapterMethodTemplate = FileUtil.readFile(new File("templates" + File.separator + "adapter-templates" + File.separator + "TestingAdapterMethodTemplate.java"));
+		File parentPath = new File("..");
+		
+		String testingAdapterClassTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "adapter-templates" + File.separator + "TestingAdapterClassTemplate.java"));
+		String testingAdapterMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "adapter-templates" + File.separator + "TestingAdapterMethodTemplate.java"));
 
 		testingAdapterClassTemplate = StringUtil.replace(testingAdapterClassTemplate, parameters);
 
@@ -325,15 +408,14 @@ public class GraphProjectBO implements Serializable {
 				String testingMethodBody = testingAdapterMethodTemplate.replace("{{testingmethodname}}", value);
 
 				if (graphProject.getMethodTemplatesByVertices().containsKey(key)) {
-					String methodTemplateContent = FileUtil.readFile(new File("templates" + File.separator + "robotium-methods" + File.separator + graphProject.getMethodTemplatesByVertices().get(key).replace(" ", "") + ".java"));
+					String methodTemplateContent = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-methods" + File.separator + graphProject.getMethodTemplatesByVertices().get(key).replace(" ", "") + ".java"));
 
 					if (methodTemplateContent == null || "".equalsIgnoreCase(methodTemplateContent)) {
-						methodTemplateContent = FileUtil.readFile(new File("templates" + File.separator + "utility-methods" + File.separator + graphProject.getMethodTemplatesByVertices().get(key).replace(" ", "") + ".java"));
+						methodTemplateContent = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "utility-methods" + File.separator + graphProject.getMethodTemplatesByVertices().get(key).replace(" ", "") + ".java"));
 					}
-
 					methodTemplateContent = validateEventProperties(methodTemplateContent, graphProject.getMethodTemplatesPropertiesByVertices().get(key));
-
 					testingMethodBody = testingMethodBody.replace("{{testingmethodtemplate}}", methodTemplateContent);
+					
 				} else {
 					testingMethodBody = testingMethodBody.replace("{{testingmethodtemplate}}", "");
 				}
@@ -369,7 +451,9 @@ public class GraphProjectBO implements Serializable {
 	}
 
 	private static synchronized void copyUtilityClasses(Map<String, String> parameters, File testingCodeSnippetsDirectory) throws Exception {
-		File[] utilityClasses = new File("templates" + File.separator + "utility-classes").listFiles();
+		File parentPath = new File("..");
+		
+		File[] utilityClasses = new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "utility-classes").listFiles();
 
 		if (utilityClasses != null && utilityClasses.length > 0) {
 			File testingCodeSnippetsUtilityClassesDirectory = new File(testingCodeSnippetsDirectory.getAbsolutePath() + File.separator + "util");
@@ -391,9 +475,17 @@ public class GraphProjectBO implements Serializable {
 	}
 
 	public static synchronized Map<String, String> getMethodTemplates() {
+		File parentPath = new File("..");
+		
 		Map<String, String> methodTemplates = new LinkedHashMap<String, String>();
 
-		File[] robotiumMethods = new File("templates" + File.separator + "robotium-methods").listFiles();
+		File[] robotiumMethods = null;
+		try {
+			robotiumMethods = new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-methods").listFiles();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		if (robotiumMethods != null && robotiumMethods.length > 0) {
 			for (File robotiumMethod : robotiumMethods) {
@@ -405,9 +497,16 @@ public class GraphProjectBO implements Serializable {
 	}
 
 	public static synchronized Map<String, String> getEdgeTemplates() {
+		File parentPath = new File("..");
 		Map<String, String> edgeTemplates = new LinkedHashMap<String, String>();
 
-		File[] utilityMethods = new File("templates" + File.separator + "utility-methods").listFiles();
+		File[] utilityMethods = null;
+		try {
+			utilityMethods = new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "utility-methods").listFiles();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		if (utilityMethods != null && utilityMethods.length > 0) {
 			for (File utilityMethod : utilityMethods) {

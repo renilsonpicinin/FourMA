@@ -67,6 +67,7 @@ public class MainView extends JFrame {
 	public static final String GENERATED_EDGE = "GENERATED_EDGE";
 	public static final String NORMAL_VERTEX = "NORMAL_VERTEX";
 	public static final String EVENT_VERTEX = "EVENT_VERTEX";
+	public static final String PARAMETER_VERTEX = "PARAMETER_VERTEX";
 	public static final String GENERATED_EVENT_VERTEX = "GENERATED_EVENT_VERTEX";
 	public static final String START_VERTEX = "START_VERTEX";
 	public static final String END_VERTEX = "END_VERTEX";
@@ -360,7 +361,7 @@ public class MainView extends JFrame {
 				Object[] cells = (Object[]) eo.getProperty("cells");
 
 				for (Object oCell : cells) {
-					MainView.this.graphProject.removeMethodTemplateByVertice(((mxCell) oCell).getId());
+					MainView.this.graphProject.removeEventInstanceByVertices(((mxCell) oCell).getId());
 					MainView.this.graphProject.removeMethodTemplatePropertiesByVertice(((mxCell) oCell).getId());
 					MainView.this.graphProject.removeEdgeTemplateByVertice(((mxCell) oCell).getId());
 				}
@@ -391,6 +392,7 @@ public class MainView extends JFrame {
 						popup.add(MainView.this.bind("Delete", CustomGraphActions.getDeleteAction()));
 						popup.add(MainView.this.bind("Rename", CustomGraphActions.getEditAction()));
 						popup.add(MainView.this.bind("Display ID", CustomGraphActions.getDisplayIdAction()));
+						popup.add(MainView.this.bind("Parameters", CustomGraphActions.getParametersAction(MainView.this.graphProject)));
 
 						popup.addSeparator();
 
@@ -981,6 +983,18 @@ public class MainView extends JFrame {
 		eventVertex.put(mxConstants.STYLE_FONTSIZE, "10");
 		eventVertex.put(mxConstants.STYLE_ROUNDED, true);
 		eventVertex.put(mxConstants.STYLE_EDGE, mxConstants.EDGESTYLE_ENTITY_RELATION);
+		
+		Map<String, Object> parameterVertex = new HashMap<String, Object>();
+		parameterVertex.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_RECTANGLE);
+		parameterVertex.put(mxConstants.STYLE_FILLCOLOR, "#E6E3C4");
+		parameterVertex.put(mxConstants.STYLE_STROKECOLOR, "#666344");
+		parameterVertex.put(mxConstants.STYLE_STROKEWIDTH, "2");
+		parameterVertex.put(mxConstants.STYLE_FONTCOLOR, "#000000");
+		parameterVertex.put(mxConstants.STYLE_FONTFAMILY, "Verdana");
+		parameterVertex.put(mxConstants.STYLE_FONTSTYLE, mxConstants.FONT_ITALIC);
+		parameterVertex.put(mxConstants.STYLE_FONTSIZE, "10");
+		parameterVertex.put(mxConstants.STYLE_ROUNDED, true);
+		parameterVertex.put(mxConstants.STYLE_EDGE, mxConstants.EDGESTYLE_ENTITY_RELATION);
 
 		Map<String, Object> generatedEventVertex = new HashMap<String, Object>();
 		generatedEventVertex.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_RECTANGLE);
@@ -1007,6 +1021,8 @@ public class MainView extends JFrame {
 		stylesheet.putCellStyle(NORMAL_VERTEX, normalVertex);
 
 		stylesheet.putCellStyle(EVENT_VERTEX, eventVertex);
+		
+		stylesheet.putCellStyle(PARAMETER_VERTEX, parameterVertex);
 
 		stylesheet.putCellStyle(GENERATED_EVENT_VERTEX, generatedEventVertex);
 
