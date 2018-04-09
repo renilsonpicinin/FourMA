@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -18,6 +19,9 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
+
+import com.general.mbts4ma.EventInstance;
+import com.general.mbts4ma.Parameter;
 import com.general.mbts4ma.view.MainView;
 import com.general.mbts4ma.view.dialog.EventPropertiesDialog;
 import com.general.mbts4ma.view.framework.gson.GsonBuilderSingleton;
@@ -269,7 +273,76 @@ public class GraphProjectBO implements Serializable {
 
 		return methodNames;
 	}
+	
+	public static synchronized boolean containsVerticeEventInstance (GraphProjectVO graphProject, List<Vertex> ces) {
+		if (ces != null && !ces.isEmpty()) {
+			for (Vertex vertice : ces) {
+				if (graphProject.getEventInstanceByVertice(vertice.getId()) != null) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static synchronized void generateMethodNamesEventInstanceListFromCES(GraphProjectVO graphProject, Map<String, String> parameters, List<Vertex> ces, StringBuilder testingMethodBodies) throws IOException {
+		File parentPath = new File("..");
+		String testingMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "TestingMethodTemplate.java"));
+		testingMethodTemplate = StringUtil.replace(testingMethodTemplate, parameters);
+		
+		List<String> originalCes = null;
+		List<String> stringSequence = null;
+		String testingMethodBody = "";
+		Map<Integer, ArrayList<EventInstance>> map = null;
+		int index = 0;
 
+		if (ces != null && !ces.isEmpty()) {
+			originalCes = new LinkedList<String>();
+			map = new LinkedHashMap<Integer, ArrayList<EventInstance>>();
+			
+			for (Vertex vertice : ces) {
+				originalCes.add(StringUtil.toCamelCase(vertice.getName(), false, "[", "]"));
+				if (graphProject.getEventInstanceByVertice(vertice.getId()) != null) {
+					if (!graphProject.getEventInstanceByVertice(vertice.getId()).isEmpty()) map.put(index, graphProject.getEventInstanceByVertice(vertice.getId()));
+				}
+				index++;
+			}
+
+			Iterator<Integer> iKey = map.keySet().iterator();
+			
+			while (iKey.hasNext()) {
+				int key = iKey.next();
+				ArrayList<EventInstance> values = map.get(key);
+				for (EventInstance e : values) {
+					stringSequence = new LinkedList<String>(originalCes);
+					String nome = stringSequence.get(key);
+					stringSequence.set(key, e.getId());
+					
+					StringBuilder sb = new StringBuilder();
+					for (Parameter p : e.getParameters()) {
+						if (e.getParameters().size() - 1 == e.getParameters().lastIndexOf(p)) {
+							sb.append(p.getType() + " " + p.getName());
+						} else {
+							sb.append(p.getType() + " " + p.getName() + ", ");
+						}		
+					}
+					
+					// METHOD TEMPLATE
+					testingMethodBody = testingMethodTemplate
+							.replace("{{testingmethodname}}", "EVENT" + e.getId())
+							.replace("{{ces}}", StringUtil.convertListToString(stringSequence, "[", "]").replaceAll(e.getId(), nome + "(" + sb.toString() + ")") );
+					
+					testingMethodBodies.append(testingMethodBody);
+					
+					if (testingMethodBodies.length() > 0  && testingMethodBodies.indexOf("\n\n") != testingMethodBodies.length() - 1) {
+						testingMethodBodies.append("\n\n");
+					}
+				}	
+			}
+		}
+	}
+
+	//TODO SEQU�NCIAS COM EVENTINSTANCE
 	public static synchronized boolean generateTestingCodeSnippets(GraphProjectVO graphProject, Map<String, String> parameters, File testingCodeSnippetsDirectory, List<List<Vertex>> cess) throws Exception {
 		File parentPath = new File("..");
 		
@@ -301,6 +374,8 @@ public class GraphProjectBO implements Serializable {
 				if (testingMethodBodies.length() > 0) {
 					testingMethodBodies.append("\n\n");
 				}
+				
+				if (containsVerticeEventInstance(graphProject, ces)) generateMethodNamesEventInstanceListFromCES(graphProject, parameters, ces, testingMethodBodies);
 
 				testingMethodBodies.append(testingMethodBody);
 			}
@@ -351,23 +426,23 @@ public class GraphProjectBO implements Serializable {
 					
 					String testingMethodBody = testingAdapterMethodTemplate.replace("{{testingmethodname}}", value);
 
-					if (graphProject.getMethodTemplatesByVertices().containsKey(key)) {
-						String methodTemplateContent = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-templates" + File.separator + "robotium-methods" + File.separator + graphProject.getMethodTemplatesByVertices().get(key).replace(" ", "") + ".java"));;
 
-						if (methodTemplateContent == null || "".equalsIgnoreCase(methodTemplateContent)) {
-							methodTemplateContent = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-templates" + File.separator  + "utility-methods" + File.separator + graphProject.getMethodTemplatesByVertices().get(key).replace(" ", "") + ".java"));
-						}
+				if (graphProject.getMethodTemplatesByVertices().containsKey(key)) {
+					String methodTemplateContent = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-methods" + File.separator + graphProject.getMethodTemplatesByVertices().get(key).replace(" ", "") + ".java"));
 
-						methodTemplateContent = validateEventProperties(methodTemplateContent, graphProject.getMethodTemplatesPropertiesByVertices().get(key));
-
-						testingMethodBody = testingMethodBody.replace("{{testingmethodtemplate}}", methodTemplateContent);
-					} else {
-						testingMethodBody = testingMethodBody.replace("{{testingmethodtemplate}}", "");
+					if (methodTemplateContent == null || "".equalsIgnoreCase(methodTemplateContent)) {
+						methodTemplateContent = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "utility-methods" + File.separator + graphProject.getMethodTemplatesByVertices().get(key).replace(" ", "") + ".java"));
 					}
+					methodTemplateContent = validateEventProperties(methodTemplateContent, graphProject.getMethodTemplatesPropertiesByVertices().get(key));
+					testingMethodBody = testingMethodBody.replace("{{testingmethodtemplate}}", methodTemplateContent);
+					
+				} else {
+					testingMethodBody = testingMethodBody.replace("{{testingmethodtemplate}}", "");
+				}
 
-					if (testingMethodBodies.length() > 0) {
-						testingMethodBodies.append("\n\n");
-					}
+				if (testingMethodBodies.length() > 0) {
+					testingMethodBodies.append("\n\n");
+				}
 					testingMethodBodies.append(testingMethodBody);
 				}							
 			}
