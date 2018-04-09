@@ -1,1 +1,0 @@
-solo.enterText((EditText) solo.getView({{idedittext}}), {{value}});

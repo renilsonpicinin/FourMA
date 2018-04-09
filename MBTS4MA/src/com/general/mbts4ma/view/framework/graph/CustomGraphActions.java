@@ -215,7 +215,7 @@ public class CustomGraphActions {
 
 							this.graphProject.updateMethodTemplateByVertice(vertice.getId(), this.label);
 
-							String methodTemplateContent = FileUtil.readFile(new File("templates" + File.separator + "robotium-methods" + File.separator + this.label.replace(" ", "") + ".java"));
+							String methodTemplateContent = FileUtil.readFile(new File("templates" + File.separator + "robotium-templates" + File.separator + "robotium-methods" + File.separator + this.label.replace(" ", "") + ".java"));
 
 							List<String> values = StringUtil.getValuesWithRegEx(methodTemplateContent, "\\{\\{([a-z]+)\\}\\}");
 

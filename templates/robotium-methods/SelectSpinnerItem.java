@@ -1,1 +1,0 @@
-solo.pressSpinnerItem({{spinnerposition}}, {{itemposition}});

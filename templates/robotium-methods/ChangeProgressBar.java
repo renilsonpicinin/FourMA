@@ -1,1 +1,0 @@
-solo.setProgressBar({{progressbarposition}}, {{value}});

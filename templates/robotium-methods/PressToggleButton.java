@@ -1,1 +1,0 @@
-solo.clickOnToggleButton(solo.getString({{idbutton}}));

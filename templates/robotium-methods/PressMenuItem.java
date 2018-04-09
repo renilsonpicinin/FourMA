@@ -1,1 +1,0 @@
-solo.clickOnMenuItem(solo.getString({{idmenuitem}}));
