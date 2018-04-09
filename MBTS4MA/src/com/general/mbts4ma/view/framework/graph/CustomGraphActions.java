@@ -161,7 +161,7 @@ public class CustomGraphActions {
 
 					if (isVertex(vertice) && !isStartVertex(vertice) && !isEndVertex(vertice) && !isGeneratedEventVertex(vertice)) {
 
-						vertice.setStyle(MainView.PARAMETER_VERTEX);
+						//vertice.setStyle(MainView.PARAMETER_VERTEX);
 						
 						ArrayList<EventInstance> values = this.graphProject.getEventInstanceByVertice(vertice.getId());
 						

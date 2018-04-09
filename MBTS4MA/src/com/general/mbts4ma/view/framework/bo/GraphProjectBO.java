@@ -21,6 +21,7 @@ import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 
 import com.general.mbts4ma.EventInstance;
+import com.general.mbts4ma.Parameter;
 import com.general.mbts4ma.view.MainView;
 import com.general.mbts4ma.view.dialog.EventPropertiesDialog;
 import com.general.mbts4ma.view.framework.gson.GsonBuilderSingleton;
@@ -307,12 +308,26 @@ public class GraphProjectBO implements Serializable {
 				ArrayList<EventInstance> values = map.get(key);
 				for (EventInstance e : values) {
 					stringSequence = new LinkedList<String>(originalCes);
+					String nome = stringSequence.get(key);
 					stringSequence.set(key, e.getId());
 					
-					testingMethodBody = testingMethodTemplate.replace("{{testingmethodname}}", "EVENT" + e.getId()).replace("{{ces}}", StringUtil.convertListToString(stringSequence, "[", "]"));
+					StringBuilder sb = new StringBuilder();
+					for (Parameter p : e.getParameters()) {
+						if (e.getParameters().size() - 1 == e.getParameters().lastIndexOf(p)) {
+							sb.append(p.getType() + " " + p.getName());
+						} else {
+							sb.append(p.getType() + " " + p.getName() + ", ");
+						}		
+					}
+					
+					// METHOD TEMPLATE
+					testingMethodBody = testingMethodTemplate
+							.replace("{{testingmethodname}}", "EVENT" + e.getId())
+							.replace("{{ces}}", StringUtil.convertListToString(stringSequence, "[", "]").replaceAll(e.getId(), nome + "(" + sb.toString() + ")") );
+					
 					testingMethodBodies.append(testingMethodBody);
 					
-					if (testingMethodBodies.length() > 0  && testingMethodBodies.indexOf("\n\n") != testingMethodBodies.length() - 1) { //precisa
+					if (testingMethodBodies.length() > 0  && testingMethodBodies.indexOf("\n\n") != testingMethodBodies.length() - 1) {
 						testingMethodBodies.append("\n\n");
 					}
 				}	

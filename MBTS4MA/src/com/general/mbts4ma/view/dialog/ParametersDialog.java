@@ -33,6 +33,7 @@ import javax.swing.event.TableColumnModelEvent;
 
 import com.general.mbts4ma.EventInstance;
 import com.general.mbts4ma.Parameter;
+import com.general.mbts4ma.view.MainView;
 import com.general.mbts4ma.view.framework.vo.GraphProjectVO;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.util.svg.ParseException;
@@ -126,9 +127,6 @@ public class ParametersDialog extends JDialog {
 		this.graphProject = graphProject;
 		this.values = values;
 		this.vertice = vertice;
-		
-		for (EventInstance e : this.values)
-			System.out.println("e.getId:" + e.getId());
 
 		this.eventNameGenerator();
 
@@ -268,10 +266,13 @@ public class ParametersDialog extends JDialog {
 	}
 
 	private void confirm() {
-		if (!validateTable()) {
-			JOptionPane.showMessageDialog(null, "Incompatibility between type and value", "Warning", JOptionPane.WARNING_MESSAGE);
-			return;
+		if (!header.isEmpty()) {
+			if (!validateTable()) {
+				JOptionPane.showMessageDialog(null, "Incompatibility between type and value", "Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 		}
+		vertice.setStyle(MainView.PARAMETER_VERTEX);
 		this.getValues().clear();
 		ArrayList<Parameter> parameters = new ArrayList<Parameter>();
 		String eventId = "";
@@ -293,6 +294,7 @@ public class ParametersDialog extends JDialog {
 	}
 
 	private void cancel() {
+		vertice.setStyle(MainView.NORMAL_VERTEX);
 		this.getValues().clear();
 		this.dispose();
 	}
@@ -339,6 +341,10 @@ public class ParametersDialog extends JDialog {
 			return;
 		}
 		TableColumn column = this.tblEventProperties.getTableHeader().getColumnModel().getColumn(col);
+		if (!header.contains(column.getHeaderValue().toString().split(" : ")[0])) {
+			this.tblEventProperties.removeColumn(column);
+			return;
+		}
 		printTableModelInfo();
 		if (column != null) {
 			this.tblEventProperties.removeColumn(column); 
