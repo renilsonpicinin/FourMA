@@ -19,6 +19,10 @@ public class GraphProjectVO extends AbstractVO implements Serializable {
 	private String androidProjectPath;
 
 	private String graphXML;
+	
+	private boolean itsAndroidProject = false;
+	
+	private String framework;
 
 	private String applicationPackage;
 	private String mainTestingActivity;
@@ -68,6 +72,22 @@ public class GraphProjectVO extends AbstractVO implements Serializable {
 
 	public void setGraphXML(String graphXML) {
 		this.graphXML = graphXML;
+	}
+	
+	public String getFramework(){
+		return this.framework;
+	}
+	
+	public void setFramework(String framework){
+		this.framework = framework;
+	}
+	
+	public boolean getItsAndroidProject() {
+		return this.itsAndroidProject;
+	}
+
+	public void setItsAndroidProject(boolean itsAndroidProject) {
+		this.itsAndroidProject = itsAndroidProject;
 	}
 
 	public String getApplicationPackage() {

@@ -3,3 +3,4 @@
 		
 		new EventRunner().executeCompleteEventSequence(new {{testingclassname}}Adapter(solo), ces);
 	}
+

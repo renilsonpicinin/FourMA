@@ -63,7 +63,15 @@ public class GraphProjectBO implements Serializable {
 			return null;
 		} else {
 			GraphProjectVO graphProject = GsonBuilderSingleton.getInstance().getGson().fromJson(json, GraphProjectVO.class);
-
+			
+			//if(!graphProject.getAndroidProjectPath().isEmpty()){
+			//	graphProject.setItsAndroidProject(true);
+			//}
+			
+			if(graphProject.getFramework().isEmpty()){
+				graphProject.setFramework("other");
+			}
+			
 			graphProject.setFileSavingPath(path);
 
 			return graphProject;
@@ -175,7 +183,7 @@ public class GraphProjectBO implements Serializable {
 
 						graphProject.updateMethodTemplateByVertice(newVertex.getId(), (String) newVertex.getValue());
 
-						String methodTemplateContent = FileUtil.readFile(new File("templates" + File.separator + "utility-methods" + File.separator + ((String) newVertex.getValue()).replace(" ", "") + ".java"));
+						String methodTemplateContent = FileUtil.readFile(new File("templates" + File.separator + "robotium-templates" + File.separator + "utility-methods" + File.separator + ((String) newVertex.getValue()).replace(" ", "") + ".java"));
 
 						List<String> values = StringUtil.getValuesWithRegEx(methodTemplateContent, "\\{\\{([a-z]+)\\}\\}");
 
@@ -206,10 +214,9 @@ public class GraphProjectBO implements Serializable {
 				}
 			}
 		}
-
 		return vertices;
 	}
-
+	
 	public static synchronized Map<String, String> generateMethodNamesMapFromCESs(List<List<Vertex>> cess, String... excepts) {
 		Map<String, String> methodNames = null;
 
@@ -335,12 +342,17 @@ public class GraphProjectBO implements Serializable {
 		}
 	}
 
-	//TODO SEQUÊNCIAS COM EVENTINSTANCE
+	//TODO SEQUï¿½NCIAS COM EVENTINSTANCE
 	public static synchronized boolean generateTestingCodeSnippets(GraphProjectVO graphProject, Map<String, String> parameters, File testingCodeSnippetsDirectory, List<List<Vertex>> cess) throws Exception {
 		File parentPath = new File("..");
 		
-		String testingClassTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "TestingClassTemplate.java"));
-		String testingMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "TestingMethodTemplate.java"));
+		String testingClassTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "generic-templates" + File.separator + "TestingClassTemplate.java"));
+		String testingMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "generic-templates" + File.separator + "TestingMethodTemplate.java"));
+		
+		if(graphProject.getFramework().equals("robotium")){
+			testingClassTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-templates" + File.separator + "TestingClassTemplate.java"));
+			testingMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-templates" + File.separator + "TestingMethodTemplate.java"));
+		}
 		
 		testingClassTemplate = StringUtil.replace(testingClassTemplate, parameters);
 		testingMethodTemplate = StringUtil.replace(testingMethodTemplate, parameters);
@@ -357,8 +369,8 @@ public class GraphProjectBO implements Serializable {
 			int count = 1;
 
 			for (List<Vertex> ces : cess) {
-				String testingMethodBody = testingMethodTemplate.replace("{{testingmethodname}}", "CES" + count++).replace("{{ces}}", StringUtil.convertListToString(generateMethodNamesListFromCES(ces), "[", "]"));
-				
+				String testingMethodBody = testingMethodTemplate.replace("{{testingmethodname}}", "CES" + count++).replace("{{ces}}", StringUtil.convertListToString(generateMethodNamesListFromCES(ces), "[", "]").replace(" ", ""));
+
 				if (testingMethodBodies.length() > 0) {
 					testingMethodBodies.append("\n\n");
 				}
@@ -383,9 +395,14 @@ public class GraphProjectBO implements Serializable {
 	private static synchronized void generateTestingAdapters(GraphProjectVO graphProject, Map<String, String> methodNames, Map<String, String> parameters, File testingCodeSnippetsDirectory) throws Exception {
 		File parentPath = new File("..");
 		
-		String testingAdapterClassTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "adapter-templates" + File.separator + "TestingAdapterClassTemplate.java"));
-		String testingAdapterMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "adapter-templates" + File.separator + "TestingAdapterMethodTemplate.java"));
+		String testingAdapterClassTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "generic-templates" + File.separator + "adapter-templates" + File.separator + "TestingAdapterClassTemplate.java"));
+		String testingAdapterMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "generic-templates" + File.separator + "adapter-templates" + File.separator + "TestingAdapterMethodTemplate.java"));
 
+		if(graphProject.getFramework().equals("robotium")){
+			testingAdapterClassTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-templates" + File.separator + "adapter-templates" + File.separator + "TestingAdapterClassTemplate.java"));
+			testingAdapterMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-templates" + File.separator + "adapter-templates" + File.separator + "TestingAdapterMethodTemplate.java"));
+		}
+		
 		testingAdapterClassTemplate = StringUtil.replace(testingAdapterClassTemplate, parameters);
 
 		File testingCodeSnippetsAdaptersDirectory = new File(testingCodeSnippetsDirectory.getAbsolutePath() + File.separator + "adapters");
@@ -404,8 +421,11 @@ public class GraphProjectBO implements Serializable {
 			while (iMethodNames.hasNext()) {
 				String key = iMethodNames.next();
 				String value = methodNames.get(key);
+												
+				if(testingMethodBodies.indexOf(value) == -1){
+					
+					String testingMethodBody = testingAdapterMethodTemplate.replace("{{testingmethodname}}", value);
 
-				String testingMethodBody = testingAdapterMethodTemplate.replace("{{testingmethodname}}", value);
 
 				if (graphProject.getMethodTemplatesByVertices().containsKey(key)) {
 					String methodTemplateContent = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-methods" + File.separator + graphProject.getMethodTemplatesByVertices().get(key).replace(" ", "") + ".java"));
@@ -423,8 +443,8 @@ public class GraphProjectBO implements Serializable {
 				if (testingMethodBodies.length() > 0) {
 					testingMethodBodies.append("\n\n");
 				}
-
-				testingMethodBodies.append(testingMethodBody);
+					testingMethodBodies.append(testingMethodBody);
+				}							
 			}
 		}
 
@@ -474,14 +494,18 @@ public class GraphProjectBO implements Serializable {
 		}
 	}
 
-	public static synchronized Map<String, String> getMethodTemplates() {
+	public static synchronized Map<String, String> getMethodTemplates(String framework) {
 		File parentPath = new File("..");
 		
 		Map<String, String> methodTemplates = new LinkedHashMap<String, String>();
 
 		File[] robotiumMethods = null;
 		try {
-			robotiumMethods = new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-methods").listFiles();
+			if(framework == "robotium"){
+				robotiumMethods = new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-templates" + File.separator + "robotium-methods").listFiles();
+			} else {
+				robotiumMethods = new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "generic-templates" + File.separator + "generic-methods").listFiles();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -496,13 +520,17 @@ public class GraphProjectBO implements Serializable {
 		return methodTemplates;
 	}
 
-	public static synchronized Map<String, String> getEdgeTemplates() {
+	public static synchronized Map<String, String> getEdgeTemplates(String framework) {
 		File parentPath = new File("..");
 		Map<String, String> edgeTemplates = new LinkedHashMap<String, String>();
 
 		File[] utilityMethods = null;
 		try {
-			utilityMethods = new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "utility-methods").listFiles();
+			if(framework == "robotium"){
+				utilityMethods = new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-templates" + File.separator + "utility-methods").listFiles();
+			} else {
+				utilityMethods = new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "generic-templates" + File.separator + "generic-utility-methods").listFiles();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

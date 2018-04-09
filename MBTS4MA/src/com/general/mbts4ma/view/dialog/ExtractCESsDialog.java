@@ -117,16 +117,36 @@ public class ExtractCESsDialog extends JDialog {
 	}
 
 	private void generateTestingCodeSnippets() throws Exception {
-		String mainTestingActivity = StringUtil.unaccent(StringUtil.stripAccents(this.graphProject.getMainTestingActivity()));
 
 		Map<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("{{projectpackage}}", this.graphProject.getApplicationPackage());
-		parameters.put("{{otherimports}}", "");
-		parameters.put("{{testingclassname}}", mainTestingActivity);
-		parameters.put("{{activity}}", mainTestingActivity);
-
+	
+		if(this.graphProject.getItsAndroidProject()){
+			String mainTestingActivity = StringUtil.unaccent(StringUtil.stripAccents(this.graphProject.getMainTestingActivity()));
+			
+			parameters.put("{{projectpackage}}", this.graphProject.getApplicationPackage());
+			parameters.put("{{otherimports}}", "");
+			parameters.put("{{testingclassname}}", mainTestingActivity);
+			parameters.put("{{activity}}", mainTestingActivity);
+		} else {
+			parameters.put("{{projectpackage}}", "{{package}}");
+			parameters.put("{{otherimports}}", "");
+			parameters.put("{{testingclassname}}", "{{ClassName}}");
+			parameters.put("{{activity}}", "");
+		}
+		
 		File testingCodeSnippetsDirectory = new File(this.graphProject.getFileSavingDirectory() + File.separator + "testing-code-snippets");
 
+		JFileChooser fileChooser = new JFileChooser(this.graphProject.getFileSavingDirectory());
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fileChooser.setSelectedFile(new File("testing-code-snippets"));
+		fileChooser.setDialogTitle("Specify a file to save");
+			
+		int result = fileChooser.showSaveDialog(null);
+			
+		if (result == JFileChooser.APPROVE_OPTION) {
+			testingCodeSnippetsDirectory = new File(fileChooser.getSelectedFile().getPath() + File.separator + "testing-code-snippets");
+		}
+		
 		if (GraphProjectBO.generateTestingCodeSnippets(this.graphProject, parameters, testingCodeSnippetsDirectory, this.cess)) {
 			JOptionPane.showMessageDialog(null, "Testing code snippet successfully generated.", "Attention", JOptionPane.INFORMATION_MESSAGE);
 
