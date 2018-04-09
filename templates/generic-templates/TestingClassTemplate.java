@@ -12,7 +12,17 @@ public class {{testingclassname}}Test {
     public {{testingclassname}}Test() {
         super({{activity}}.class);
     }
+
+    @Override
+    public void setUp() throws Exception {
+       
+    }
     
 {{testingmethodtemplate}}
+    
+    @Override
+    public void tearDown() throws Exception {
+       
+    }
 
 }
