@@ -144,7 +144,7 @@ public class ExtractCESsDialog extends JDialog {
 		int result = fileChooser.showSaveDialog(null);
 			
 		if (result == JFileChooser.APPROVE_OPTION) {
-			testingCodeSnippetsDirectory = new File(fileChooser.getCurrentDirectory() + File.separator + "testing-code-snippets");
+			testingCodeSnippetsDirectory = new File(fileChooser.getSelectedFile().getPath() + File.separator + "testing-code-snippets");
 		}
 		
 		if (GraphProjectBO.generateTestingCodeSnippets(this.graphProject, parameters, testingCodeSnippetsDirectory, this.cess)) {
