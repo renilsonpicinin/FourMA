@@ -1,6 +1,7 @@
 package com.general.mbts4ma.view.framework.bo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -63,6 +64,17 @@ public abstract class GraphConverter {
 		EventSequenceGraph esg = createESG(getVertices(graph));
 
 		return esg;
+	}
+	
+	public static synchronized Map<String, String> getMetricsFromESG(mxGraph graph) {
+		Map<String, String> metrics = new LinkedHashMap<>();
+		try {
+			EventSequenceGraph esg = convertToESG(graph);
+			metrics.put("Number of Events (nodes)", ""+esg.getNumberOfNodes());
+			metrics.put("Number of Event pairs (edges)", ""+esg.getNumberOfEdges());
+		}
+		catch(Exception e) {}
+		return metrics;
 	}
 	
 	/**

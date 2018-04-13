@@ -24,6 +24,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultCaret;
+
+import com.general.mbts4ma.view.framework.bo.GraphConverter;
 import com.general.mbts4ma.view.framework.bo.GraphProjectBO;
 import com.general.mbts4ma.view.framework.util.StringUtil;
 import com.general.mbts4ma.view.framework.vo.GraphProjectVO;
@@ -108,9 +110,24 @@ public class ExtractCESsDialog extends JDialog {
 		gl_buttonPane.setHorizontalGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING).addGroup(gl_buttonPane.createSequentialGroup().addContainerGap().addComponent(this.btnGenerateTestingCodeSnippets, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(this.btnExportToTxt, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE).addContainerGap(378, Short.MAX_VALUE)));
 		gl_buttonPane.setVerticalGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING).addGroup(gl_buttonPane.createSequentialGroup().addContainerGap().addGroup(gl_buttonPane.createParallelGroup(Alignment.LEADING).addComponent(this.btnExportToTxt, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE).addComponent(this.btnGenerateTestingCodeSnippets, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)).addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		this.buttonPane.setLayout(gl_buttonPane);
-
+		
+		//ESG metrics
+		Map<String,	String> metrics = GraphConverter.getMetricsFromESG(graph);
+		StringBuilder metricsStr = new StringBuilder();
+		metricsStr.append("ESG Metrics");
+		metricsStr.append("\r\n");
+		for(String metricName : metrics.keySet()) {
+			metricsStr.append(metricName + ": " + metrics.get(metricName));
+			metricsStr.append("\r\n");
+		}
+		metricsStr.append("\r\n");
+		metricsStr.append("\r\n");
+		metricsStr.append("CESs (Test Sequences)");
+		metricsStr.append("\r\n");
+		metricsStr.append("\r\n");
+		
 		if (cessAsString != null && !"".equalsIgnoreCase(cessAsString)) {
-			this.txtCESs.setText(cessAsString);
+			this.txtCESs.setText(metricsStr.toString() + cessAsString);
 		} else {
 			this.txtCESs.setText("");
 		}

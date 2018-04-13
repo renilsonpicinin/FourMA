@@ -68,7 +68,7 @@ public class GraphProjectBO implements Serializable {
 			//	graphProject.setItsAndroidProject(true);
 			//}
 			
-			if(graphProject.getFramework().isEmpty()){
+			if(graphProject.getFramework() == null || graphProject.getFramework().isEmpty()){
 				graphProject.setFramework("other");
 			}
 			
