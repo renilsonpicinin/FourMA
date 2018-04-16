@@ -287,7 +287,13 @@ public class GraphProjectBO implements Serializable {
 	
 	public static synchronized void generateMethodNamesEventInstanceListFromCES(GraphProjectVO graphProject, Map<String, String> parameters, List<Vertex> ces, StringBuilder testingMethodBodies) throws IOException {
 		File parentPath = new File("..");
-		String testingMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "TestingMethodTemplate.java"));
+		String testingMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "generic-templates" + File.separator + "TestingMethodTemplate.java"));
+		testingMethodTemplate = StringUtil.replace(testingMethodTemplate, parameters);
+		
+		if(graphProject.getFramework().equals("robotium")){
+			testingMethodTemplate = FileUtil.readFile(new File(parentPath.getCanonicalPath() + File.separator + "templates" + File.separator + "robotium-templates" + File.separator + "TestingMethodTemplate.java"));
+		}
+		
 		testingMethodTemplate = StringUtil.replace(testingMethodTemplate, parameters);
 		
 		List<String> originalCes = null;
@@ -342,7 +348,7 @@ public class GraphProjectBO implements Serializable {
 		}
 	}
 
-	//TODO SEQU�NCIAS COM EVENTINSTANCE
+	//TODO SEQUENCIAS COM EVENTINSTANCE
 	public static synchronized boolean generateTestingCodeSnippets(GraphProjectVO graphProject, Map<String, String> parameters, File testingCodeSnippetsDirectory, List<List<Vertex>> cess) throws Exception {
 		File parentPath = new File("..");
 		
