@@ -1,0 +1,1 @@
+driver.rotate(ScreenOrientation.LANDSCAPE);

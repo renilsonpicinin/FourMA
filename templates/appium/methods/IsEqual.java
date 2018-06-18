@@ -1,0 +1,1 @@
+boolean isEqual = elementOne.equals(elementTwo);

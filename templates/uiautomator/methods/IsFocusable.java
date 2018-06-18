@@ -1,0 +1,1 @@
+boolean isFocusable = device.findObject(new UiSelector().{{selector}}("")).isFocusable();

@@ -1,0 +1,1 @@
+boolean isChecked = device.findObject(new UiSelector().{{selector}}("")).isChecked();

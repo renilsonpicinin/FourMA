@@ -408,7 +408,7 @@ public class MainView extends JFrame {
 
 						methodTemplatesMenu.addSeparator();
 
-						Map<String, String> methodTemplates = GraphProjectBO.getMethodTemplates(graphProject.getFramework());
+						Map<String, String> methodTemplates = GraphProjectBO.getMethodTemplates(graphProject);
 
 						Iterator<String> iMethodTemplates = methodTemplates.keySet().iterator();
 
@@ -426,7 +426,7 @@ public class MainView extends JFrame {
 
 						edgeTemplatesMenu.addSeparator();
 
-						Map<String, String> edgeTemplates = GraphProjectBO.getEdgeTemplates(graphProject.getFramework());
+						Map<String, String> edgeTemplates = GraphProjectBO.getEdgeTemplates(graphProject);
 
 						Iterator<String> iEdgeTemplates = edgeTemplates.keySet().iterator();
 

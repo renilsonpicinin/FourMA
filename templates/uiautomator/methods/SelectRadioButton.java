@@ -1,0 +1,1 @@
+device.findObject(new UiSelector().className("android.widget.RadioButton").index({{index}})).click();

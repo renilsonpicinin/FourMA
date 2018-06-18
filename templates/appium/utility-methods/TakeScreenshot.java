@@ -1,0 +1,1 @@
+File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);

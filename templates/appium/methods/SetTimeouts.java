@@ -1,0 +1,1 @@
+driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);

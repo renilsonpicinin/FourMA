@@ -25,7 +25,7 @@ public class {{testingclassname}}Test extends ActivityInstrumentationTestCase2 {
         solo = new Solo(getInstrumentation(), getActivity());
     }
     
-{{testingmethodtemplate}}
+    {{testingmethodtemplate}}
     
     @Override
     public void tearDown() throws Exception {

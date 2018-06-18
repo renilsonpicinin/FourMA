@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.general.mbts4ma.*;
 import com.general.mbts4ma.erunner.Event;
+import com.general.mbts4ma.view.framework.util.FileUtil;
 
 public class GraphProjectVO extends AbstractVO implements Serializable {
 
@@ -22,7 +23,7 @@ public class GraphProjectVO extends AbstractVO implements Serializable {
 	
 	private boolean itsAndroidProject = false;
 	
-	private String framework;
+	private String framework = null;
 
 	private String applicationPackage;
 	private String mainTestingActivity;

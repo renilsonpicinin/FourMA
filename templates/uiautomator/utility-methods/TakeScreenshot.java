@@ -1,0 +1,1 @@
+device.takeScreenshot({{File storePath}});

@@ -1,0 +1,1 @@
+boolean varExists = device.findObject(new UiSelector().{{selector}}("")).exists();

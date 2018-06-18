@@ -1,0 +1,1 @@
+boolean isClickable = device.findObject(new UiSelector().{{selector}}("")).isClickable();

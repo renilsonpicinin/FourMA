@@ -1,0 +1,1 @@
+boolean isEnabled = device.findObject(new UiSelector().{{selector}}("")).isEnabled();

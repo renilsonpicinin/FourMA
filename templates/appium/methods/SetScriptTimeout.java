@@ -1,0 +1,1 @@
+driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);

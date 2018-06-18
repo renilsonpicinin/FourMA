@@ -134,7 +134,6 @@ public class ExtractCESsDialog extends JDialog {
 	}
 
 	private void generateTestingCodeSnippets() throws Exception {
-
 		Map<String, String> parameters = new LinkedHashMap<String, String>();
 	
 		if(this.graphProject.getItsAndroidProject()){
@@ -163,7 +162,6 @@ public class ExtractCESsDialog extends JDialog {
 		if (result == JFileChooser.APPROVE_OPTION) {
 			testingCodeSnippetsDirectory = new File(fileChooser.getSelectedFile().getPath() + File.separator + "testing-code-snippets");
 		}
-		
 		if (GraphProjectBO.generateTestingCodeSnippets(this.graphProject, parameters, testingCodeSnippetsDirectory, this.cess)) {
 			JOptionPane.showMessageDialog(null, "Testing code snippet successfully generated.", "Attention", JOptionPane.INFORMATION_MESSAGE);
 

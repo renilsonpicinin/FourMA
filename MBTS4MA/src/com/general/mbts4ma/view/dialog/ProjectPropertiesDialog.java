@@ -33,7 +33,9 @@ public class ProjectPropertiesDialog extends JDialog {
 	private JTextField txtName;
 	private JTextArea txtDescription;
 	private JRadioButton rbtRobotium;
-	private JRadioButton rbtOther;
+	private JRadioButton rbtAppium;
+	private JRadioButton rbtUiAutomator;
+	private JRadioButton rbtGeneric;
 	private ButtonGroup grpFramework;
 	private JCheckBox cbxItsAndroidProject;
 	private JTextField txtAndroidProjectPath;
@@ -80,15 +82,23 @@ public class ProjectPropertiesDialog extends JDialog {
 		JLabel lblFramework = new JLabel("Framework");
 		lblFramework.setFont(new Font("Verdana", Font.PLAIN, 12));
 		
+		this.rbtAppium = new JRadioButton("Appium");
+		this.rbtAppium.setFont(new Font("Verdana", Font.PLAIN, 12));
+		
 		this.rbtRobotium = new JRadioButton("Robotium");
 		this.rbtRobotium.setFont(new Font("Verdana", Font.PLAIN, 12));
 		
-		this.rbtOther = new JRadioButton("Other");
-		this.rbtOther.setFont(new Font("Verdana", Font.PLAIN, 12));
+		this.rbtUiAutomator = new JRadioButton("UI Automator");
+		this.rbtUiAutomator.setFont(new Font("Verdana", Font.PLAIN, 12));
+		
+		this.rbtGeneric = new JRadioButton("Generic");
+		this.rbtGeneric.setFont(new Font("Verdana", Font.PLAIN, 12));
 		
 		this.grpFramework = new ButtonGroup();
+		this.grpFramework.add(this.rbtAppium);
 		this.grpFramework.add(this.rbtRobotium);
-		this.grpFramework.add(this.rbtOther);
+		this.grpFramework.add(this.rbtUiAutomator);
+		this.grpFramework.add(this.rbtGeneric);
 		
 		
 		this.cbxItsAndroidProject = new JCheckBox("It´s an Android Project");
@@ -146,8 +156,8 @@ public class ProjectPropertiesDialog extends JDialog {
 
 		this.cmbMainTestingActivity = new JComboBox();
 		GroupLayout gl_contentPanel = new GroupLayout(this.contentPanel);
-		gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addContainerGap().addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup().addComponent(this.txtAndroidProjectPath, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(this.btnSelectAndroidProject, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnVerifyAndroidProject, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)).addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE).addComponent(this.txtName, GroupLayout.PREFERRED_SIZE, 260, GroupLayout.PREFERRED_SIZE).addComponent(lblDescription).addComponent(this.txtDescription, GroupLayout.PREFERRED_SIZE, 404, GroupLayout.PREFERRED_SIZE).addComponent(lblFramework, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(this.rbtRobotium, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(this.rbtOther, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(this.cbxItsAndroidProject, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE).addComponent(lblAndroidProjectPath, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(lblApplicationPackage, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(lblMainTestingActivity, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(this.txtApplicationPackage, GroupLayout.PREFERRED_SIZE, 320, GroupLayout.PREFERRED_SIZE).addComponent(this.cmbMainTestingActivity, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)).addContainerGap()));
-		gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addContainerGap().addComponent(lblNewLabel).addPreferredGap(ComponentPlacement.RELATED).addComponent(this.txtName, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(lblDescription, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(this.txtDescription, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(lblFramework, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addComponent(rbtRobotium, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addComponent(rbtOther, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addComponent(this.cbxItsAndroidProject, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addComponent(lblAndroidProjectPath, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addComponent(this.txtAndroidProjectPath, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE).addGap(12).addComponent(lblApplicationPackage, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(this.txtApplicationPackage, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(lblMainTestingActivity, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(this.cmbMainTestingActivity, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)).addComponent(btnVerifyAndroidProject, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE).addComponent(this.btnSelectAndroidProject, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)).addContainerGap(49, Short.MAX_VALUE)));
+		gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addContainerGap().addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup().addComponent(this.txtAndroidProjectPath, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(this.btnSelectAndroidProject, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnVerifyAndroidProject, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)).addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE).addComponent(this.txtName, GroupLayout.PREFERRED_SIZE, 260, GroupLayout.PREFERRED_SIZE).addComponent(lblDescription).addComponent(this.txtDescription, GroupLayout.PREFERRED_SIZE, 404, GroupLayout.PREFERRED_SIZE).addComponent(lblFramework, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(this.rbtAppium, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(this.rbtRobotium, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(this.rbtUiAutomator, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(this.rbtGeneric, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(this.cbxItsAndroidProject, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE).addComponent(lblAndroidProjectPath, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(lblApplicationPackage, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(lblMainTestingActivity, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE).addComponent(this.txtApplicationPackage, GroupLayout.PREFERRED_SIZE, 320, GroupLayout.PREFERRED_SIZE).addComponent(this.cmbMainTestingActivity, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)).addContainerGap()));
+		gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addContainerGap().addComponent(lblNewLabel).addPreferredGap(ComponentPlacement.RELATED).addComponent(this.txtName, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(lblDescription, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(this.txtDescription, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(lblFramework, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addComponent(rbtAppium, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addComponent(rbtRobotium, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addComponent(rbtUiAutomator, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addComponent(rbtGeneric, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addComponent(this.cbxItsAndroidProject, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addComponent(lblAndroidProjectPath, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addComponent(this.txtAndroidProjectPath, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE).addGap(12).addComponent(lblApplicationPackage, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(this.txtApplicationPackage, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(lblMainTestingActivity, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(this.cmbMainTestingActivity, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)).addComponent(btnVerifyAndroidProject, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE).addComponent(this.btnSelectAndroidProject, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)).addContainerGap(49, Short.MAX_VALUE)));
 		this.contentPanel.setLayout(gl_contentPanel);
 		{
 			JPanel buttonPane = new JPanel();
@@ -179,7 +189,10 @@ public class ProjectPropertiesDialog extends JDialog {
 			buttonPane.setLayout(gl_buttonPane);
 		}
 
-		this.disableAndroidFields();
+		if(!this.cbxItsAndroidProject.isSelected()){
+			this.disableAndroidFields();
+		}
+		
 		this.loadProjectProperties();
 	}
 
@@ -190,11 +203,15 @@ public class ProjectPropertiesDialog extends JDialog {
 			
 			if(this.graphProject.getFramework().equals("robotium")){
 				this.rbtRobotium.setSelected(true);
+			} else if(this.graphProject.getFramework().equals("appium")){
+				this.rbtAppium.setSelected(true);
+			}else if(this.graphProject.getFramework().equals("uiautomator")){
+				this.rbtUiAutomator.setSelected(true);
 			} else {
-				this.rbtOther.setSelected(true);
+				this.rbtGeneric.setSelected(true);
 			}
 			
-			this.cbxItsAndroidProject.setSelected(this.graphProject.getItsAndroidProject());		
+			this.cbxItsAndroidProject.setSelected(this.graphProject.getItsAndroidProject());
 			
 			this.txtAndroidProjectPath.setText(this.graphProject.getAndroidProjectPath());
 
@@ -257,8 +274,12 @@ public class ProjectPropertiesDialog extends JDialog {
 		
 		if(this.rbtRobotium.isSelected()){
 			this.graphProject.setFramework("robotium");
-		} else {
-			this.graphProject.setFramework("other");
+		} else if(this.rbtAppium.isSelected()){
+			this.graphProject.setFramework("appium");
+		} else if(this.rbtUiAutomator.isSelected()){
+			this.graphProject.setFramework("uiautomator");
+		} else{
+			this.graphProject.setFramework("generic");
 		}
 
 		String path = this.txtAndroidProjectPath.getText();

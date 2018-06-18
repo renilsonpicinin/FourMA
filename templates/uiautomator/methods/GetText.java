@@ -1,0 +1,1 @@
+String text = device.findObject(new UiSelector().{{selector}}("")).getText();

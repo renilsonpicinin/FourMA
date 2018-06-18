@@ -11,6 +11,6 @@ public class {{testingclassname}}Adapter {
         this.solo = solo;
     }
 
-{{testingmethodtemplate}}
+	{{testingmethodtemplate}}
 
 }

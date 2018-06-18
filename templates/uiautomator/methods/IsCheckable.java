@@ -1,0 +1,1 @@
+boolean isCheckable = device.findObject(new UiSelector().{{selector}}("")).isCheckable();

@@ -1,0 +1,1 @@
+String packageName = device.findObject(new UiSelector().{{selector}}("")).getPackageName();

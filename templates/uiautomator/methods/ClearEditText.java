@@ -1,0 +1,1 @@
+device.findObject(new UiSelector().{{selector}}("")).clearTextField();

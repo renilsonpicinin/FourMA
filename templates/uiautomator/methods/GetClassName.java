@@ -1,0 +1,1 @@
+String className = device.findObject(new UiSelector().{{selector}}("")).getClassName();

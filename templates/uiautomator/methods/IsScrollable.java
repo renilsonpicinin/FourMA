@@ -1,0 +1,1 @@
+boolean isScrollable = device.findObject(new UiSelector().{{selector}}("")).isScrollable();

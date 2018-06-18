@@ -1,0 +1,1 @@
+driver.endTestCoverage("Intent", "/path");

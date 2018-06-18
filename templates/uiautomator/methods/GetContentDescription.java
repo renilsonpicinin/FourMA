@@ -1,0 +1,1 @@
+String contentDesc = device.findObject(new UiSelector().{{selector}}("")).getContentDescription();
