@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 
@@ -22,6 +24,7 @@ import com.general.mbts4ma.EventInstance;
 import com.general.mbts4ma.Parameter;
 import com.general.mbts4ma.view.MainView;
 import com.general.mbts4ma.view.dialog.EventPropertiesDialog;
+import com.general.mbts4ma.view.dialog.ExtractCESsDialog;
 import com.general.mbts4ma.view.framework.gson.GsonBuilderSingleton;
 import com.general.mbts4ma.view.framework.util.FileUtil;
 import com.general.mbts4ma.view.framework.util.MapUtil;
@@ -541,5 +544,4 @@ public class GraphProjectBO implements Serializable {
 
 		return edgeTemplates;
 	}
-
 }

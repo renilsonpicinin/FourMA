@@ -6,7 +6,13 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +30,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultCaret;
+
+import org.apache.commons.io.FileUtils;
 
 import com.general.mbts4ma.view.framework.bo.GraphConverter;
 import com.general.mbts4ma.view.framework.bo.GraphProjectBO;
@@ -166,6 +174,12 @@ public class ExtractCESsDialog extends JDialog {
 				JOptionPane.showMessageDialog(null, "Testing code snippet successfully generated.", "Attention", JOptionPane.INFORMATION_MESSAGE);
 	
 				try {
+					File parentPath = new File("..");
+					moveEventClasses(new File(parentPath.getCanonicalPath() + File.separator + "MBTS4MA-Runner"
+												+ File.separator +"src"+ File.separator +"com"+ File.separator 
+												+"general"+ File.separator +"mbts4ma" +File.separator+"erunner"),
+												new File(testingCodeSnippetsDirectory + File.separator + "erunner"));
+					
 					Desktop.getDesktop().open(testingCodeSnippetsDirectory);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -192,5 +206,21 @@ public class ExtractCESsDialog extends JDialog {
 				}
 			}
 		}
+	}
+	
+	private void moveEventClasses(File source, File destiny) {
+		 
+		if (source.isDirectory()) {
+            if (!destiny.exists()) {
+            	destiny.mkdir();
+            }
+            
+            try {
+				FileUtils.copyDirectory(source, destiny);
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(this, "Error when copying class from 'erunner'");
+				e.printStackTrace();
+			}
+        }
 	}
 }
