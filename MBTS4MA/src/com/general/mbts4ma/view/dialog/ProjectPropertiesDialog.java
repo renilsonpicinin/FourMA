@@ -101,7 +101,7 @@ public class ProjectPropertiesDialog extends JDialog {
 		this.grpFramework.add(this.rbtGeneric);
 		
 		
-		this.cbxItsAndroidProject = new JCheckBox("It´s an Android Project");
+		this.cbxItsAndroidProject = new JCheckBox("Linked Android project");
 		this.cbxItsAndroidProject.setFont(new Font("Verdana", Font.PLAIN, 12));
 		this.cbxItsAndroidProject.addActionListener(new ActionListener(){
 			@Override
@@ -189,9 +189,7 @@ public class ProjectPropertiesDialog extends JDialog {
 			buttonPane.setLayout(gl_buttonPane);
 		}
 
-		if(!this.cbxItsAndroidProject.isSelected()){
-			this.disableAndroidFields();
-		}
+		this.disableAndroidFields();
 		
 		this.loadProjectProperties();
 	}
@@ -214,6 +212,8 @@ public class ProjectPropertiesDialog extends JDialog {
 			this.cbxItsAndroidProject.setSelected(this.graphProject.getItsAndroidProject());
 			
 			this.txtAndroidProjectPath.setText(this.graphProject.getAndroidProjectPath());
+			
+			this.disableAndroidFields();
 
 			this.loadAndroidProjectInfo(this.graphProject.getAndroidProjectPath());
 		}

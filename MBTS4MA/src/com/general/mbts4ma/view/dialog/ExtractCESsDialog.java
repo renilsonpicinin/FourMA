@@ -161,14 +161,15 @@ public class ExtractCESsDialog extends JDialog {
 			
 		if (result == JFileChooser.APPROVE_OPTION) {
 			testingCodeSnippetsDirectory = new File(fileChooser.getSelectedFile().getPath() + File.separator + "testing-code-snippets");
-		}
-		if (GraphProjectBO.generateTestingCodeSnippets(this.graphProject, parameters, testingCodeSnippetsDirectory, this.cess)) {
-			JOptionPane.showMessageDialog(null, "Testing code snippet successfully generated.", "Attention", JOptionPane.INFORMATION_MESSAGE);
-
-			try {
-				Desktop.getDesktop().open(testingCodeSnippetsDirectory);
-			} catch (IOException e) {
-				e.printStackTrace();
+		
+			if (GraphProjectBO.generateTestingCodeSnippets(this.graphProject, parameters, testingCodeSnippetsDirectory, this.cess)) {
+				JOptionPane.showMessageDialog(null, "Testing code snippet successfully generated.", "Attention", JOptionPane.INFORMATION_MESSAGE);
+	
+				try {
+					Desktop.getDesktop().open(testingCodeSnippetsDirectory);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
