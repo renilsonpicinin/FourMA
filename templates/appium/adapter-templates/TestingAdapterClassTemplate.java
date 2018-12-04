@@ -1,13 +1,11 @@
 package {{projectpackage}}.test.adapters;
 
-import com.general.mbts4ma.erunner.*;
-
 public class {{testingclassname}}Adapter {
 
-    private UiDevice device = null;
+    private AndroidDriver driver = null;
 
-    public {{testingclassname}}Adapter(UiDevice device) {
-        this.device = device;
+    public {{testingclassname}}Adapter(AndroidDriver driver) {
+        this.driver = driver;
     }
 
 	{{testingmethodtemplate}}

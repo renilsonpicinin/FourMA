@@ -1,0 +1,1 @@
+driver.findElementById("{{spinner}}").click();

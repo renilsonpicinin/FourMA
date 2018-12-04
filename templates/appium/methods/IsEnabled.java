@@ -1,1 +1,1 @@
-boolean isEnabled = drive.findElementById("").isEnabled();
+boolean isEnabled = driver.findElementById("").isEnabled();

@@ -61,7 +61,7 @@ public class ProjectPropertiesDialog extends JDialog {
 
 		this.setTitle("Properties");
 
-		this.setBounds(100, 100, 500, 500);
+		this.setBounds(100, 100, 500, 550);
 		this.getContentPane().setLayout(new BorderLayout());
 		this.contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		this.setModal(true);

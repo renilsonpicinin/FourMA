@@ -1,4 +1,4 @@
 @Event(label = "{{testingmethodname}}")
-	public boolean {{testingmethodname}}() {
+	public void {{testingmethodname}}() {
 		{{testingmethodtemplate}}
 	}
